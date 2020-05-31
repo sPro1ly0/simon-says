@@ -4,7 +4,12 @@ let userClickedPattern = [];
 let buttonColors = ['red', 'blue', 'green', 'yellow'];
 let level = 0;
 
-$('h1').text('Press A Key to Start');
+// reset game
+function startOver() {
+    gamePattern = [];
+    userClickedPattern = [];
+    level = 0;
+}
 
 function checkAnswer(currentLevel) {
     if (userClickedPattern[currentLevel] === gamePattern[currentLevel]) {
@@ -19,10 +24,8 @@ function checkAnswer(currentLevel) {
         wrong.play();
         $('body').addClass('game-over');
         setTimeout(() => $('body').removeClass('game-over'), 200);
-        gamePattern = [];
-        userClickedPattern = [];
-        level = 0;
         $('h1').text('Game Over, Press Any Key to restart');
+        startOver();
     }
 }
 
@@ -55,19 +58,20 @@ function animatePress(currentColor) {
         $(`#${currentColor}`).removeClass('pressed');
     }, 200);
 }
+
+// generate Simon says sequence of colors, increase level
 function nextSequence() {
-    level++;
-    $('h1').text(`Level ${level}`);
     let randomNumber = Math.floor(Math.random() * 4);
     let randomChosenColor = buttonColors[randomNumber];
 
+    level++;
+    $('h1').text(`Level ${level}`);
     gamePattern.push(randomChosenColor);
-
     animatePress(randomChosenColor);
     playSound(randomChosenColor);
-
 }
 
+// user button click
 $('.btn').on('click', (e) => {
     let userChosenColor = e.target.id;
     userClickedPattern.push(userChosenColor);
@@ -76,12 +80,13 @@ $('.btn').on('click', (e) => {
     checkAnswer(userClickedPattern.length - 1);
 });
 
+//start new game on key down
 $(document).on('keydown', () => {
     if (gamePattern.length > 0) {
         return '';
-    } else {
+    } else {     
+        $('h1').text(`Level 1`);
         setTimeout(() => nextSequence(), 1000);
-        $('h1').text(`Level 0`);
     }
 });
 
